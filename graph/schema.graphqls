@@ -1,0 +1,75 @@
+# KanClaude board — GraphQL port of the original Node/REST backend.
+# Same data model: tasks flow todo → doing → verify → done (or blocked),
+# each carrying an append-only activity log shared by the user and Claude.
+
+scalar Time
+
+enum Column {
+  TODO
+  DOING
+  VERIFY
+  DONE
+  BLOCKED
+}
+
+enum Priority {
+  HIGH
+  NORMAL
+  LOW
+}
+
+enum Author {
+  USER
+  CLAUDE
+}
+
+type LogEntry {
+  who: Author!
+  text: String!
+  at: Time!
+}
+
+type Task {
+  id: ID!
+  title: String!
+  desc: String!
+  "Slash-separated path (Games/Tetris/Levels) — hierarchy is implicit."
+  project: String!
+  priority: Priority!
+  "Sort key within a priority band; lower comes first."
+  order: Float!
+  column: Column!
+  createdAt: Time!
+  log: [LogEntry!]!
+}
+
+type Query {
+  "All tasks, optionally filtered by column, sorted by priority then order."
+  board(column: Column): [Task!]!
+  task(id: ID!): Task
+}
+
+input NewTask {
+  title: String!
+  desc: String
+  project: String
+  priority: Priority
+}
+
+input TaskPatch {
+  title: String
+  desc: String
+  project: String
+  priority: Priority
+  order: Float
+}
+
+type Mutation {
+  "Create a task at the top of the todo column."
+  createTask(input: NewTask!): Task!
+  updateTask(id: ID!, patch: TaskPatch!): Task!
+  moveTask(id: ID!, column: Column!, order: Float): Task!
+  "Append to a task's activity log (append-only, like the original)."
+  addLog(taskId: ID!, who: Author!, text: String!): Task!
+  deleteTask(id: ID!): Boolean!
+}
