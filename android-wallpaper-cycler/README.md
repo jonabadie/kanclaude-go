@@ -7,7 +7,11 @@ themed **playlists** you pick in the app (stored in `SharedPreferences`):
 - **Dragon Ball Vehicles** — original scenes inspired by the iconic rides: Flying Nimbus,
   Capsule Hovercar, Saiyan Space Pod, Cloud Skimmer, Dragon Radar
 
-Everything is procedurally drawn with Canvas — no image assets, no copyrighted artwork.
+Everything built-in is procedurally drawn with Canvas — no image assets, no copyrighted artwork.
+
+You can also **add animated GIFs from the web**: paste a GIF URL in the app and it's downloaded
+to app storage and added to a "Downloaded" playlist, played full-screen (center-cropped) by the
+wallpaper engine and cycled daily like any other playlist.
 
 ## How it works
 

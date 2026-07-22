@@ -6,4 +6,11 @@
     <string name="playlist_header">Playlist</string>
     <string name="rotation_header">Daily rotation</string>
     <string name="set_wallpaper">Set as live wallpaper</string>
+    <string name="download_header">Add from the web (GIF)</string>
+    <string name="url_hint">https://example.com/animation.gif</string>
+    <string name="download">Download GIF</string>
+    <string name="download_started">Downloading…</string>
+    <string name="download_done">Added %1$s to the Downloaded playlist</string>
+    <string name="download_failed">Download failed: %1$s</string>
+    <string name="not_a_gif">that URL is not an animated GIF</string>
 </resources>

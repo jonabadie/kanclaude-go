@@ -2,6 +2,7 @@ package com.jonabadie.wallpapercycler.wallpapers
 
 import android.content.Context
 import android.graphics.Canvas
+import java.io.File
 import java.util.Calendar
 
 /**
@@ -25,7 +26,9 @@ class Playlist(val name: String, val wallpapers: List<AnimatedWallpaper>)
  */
 object WallpaperRegistry {
 
-    val playlists: List<Playlist> = listOf(
+    const val DOWNLOADS_PLAYLIST = "Downloaded"
+
+    private val builtIn: List<Playlist> = listOf(
         Playlist(
             "Classic",
             listOf(Starfield(), OceanWaves(), LavaLamp(), MatrixRain(), Fireflies()),
@@ -36,7 +39,33 @@ object WallpaperRegistry {
         ),
     )
 
+    @Volatile
+    private var cached: List<Playlist>? = null
+
+    /** Built-in playlists, plus a "Downloaded" playlist when the user has added GIFs. */
+    fun playlists(context: Context): List<Playlist> {
+        cached?.let { return it }
+        val downloaded = downloadsDir(context)
+            .listFiles { f -> f.extension.equals("gif", ignoreCase = true) }
+            ?.sortedBy { it.name }
+            ?.map { GifWallpaper(it) }
+            .orEmpty()
+        val result = if (downloaded.isEmpty()) builtIn
+        else builtIn + Playlist(DOWNLOADS_PLAYLIST, downloaded)
+        cached = result
+        return result
+    }
+
+    /** Call after adding or removing downloaded files. */
+    fun invalidate() {
+        cached = null
+    }
+
+    fun downloadsDir(context: Context): File =
+        File(context.filesDir, "wallpapers").apply { mkdirs() }
+
     fun activePlaylist(context: Context): Playlist {
+        val playlists = playlists(context)
         val name = prefs(context).getString(KEY_PLAYLIST, null)
         return playlists.firstOrNull { it.name == name } ?: playlists.first()
     }
