@@ -3,6 +3,7 @@
     <string name="app_name">Wallpaper Cycler</string>
     <string name="wallpaper_description">A live wallpaper that switches to a new animated scene every day.</string>
     <string name="todays_wallpaper">Today\'s wallpaper: %1$s</string>
+    <string name="playlist_header">Playlist</string>
     <string name="rotation_header">Daily rotation</string>
     <string name="set_wallpaper">Set as live wallpaper</string>
 </resources>

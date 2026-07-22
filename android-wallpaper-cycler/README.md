@@ -1,8 +1,13 @@
 # Wallpaper Cycler
 
-An Android **live wallpaper** that shows a different animated scene every day. Ships with five
-procedurally-drawn scenes (no image assets): Starfield, Ocean Waves, Lava Lamp, Matrix Rain,
-and Fireflies.
+An Android **live wallpaper** that shows a different animated scene every day, organized into
+themed **playlists** you pick in the app (stored in `SharedPreferences`):
+
+- **Classic** — Starfield, Ocean Waves, Lava Lamp, Matrix Rain, Fireflies
+- **Dragon Ball Vehicles** — original scenes inspired by the iconic rides: Flying Nimbus,
+  Capsule Hovercar, Saiyan Space Pod, Cloud Skimmer, Dragon Radar
+
+Everything is procedurally drawn with Canvas — no image assets, no copyrighted artwork.
 
 ## How it works
 
@@ -14,10 +19,11 @@ directly onto the home-screen surface.
   wallpaper isn't visible (screen off, app in front), so it costs nothing most of the time.
 - **`AnimatedWallpaper`** — the scene interface: `draw(canvas, width, height, t)` where `t` is
   seconds elapsed. Each scene is a small piece of procedural Canvas drawing.
-- **`WallpaperRegistry`** — the daily cycling. Today's scene is simply
-  `wallpapers[localEpochDay % wallpapers.size]`, re-resolved on every frame. When the local date
-  flips at midnight, the modulo changes and the next scene appears automatically — no
-  `AlarmManager`, `WorkManager`, or background jobs needed.
+- **`WallpaperRegistry`** — playlists and daily cycling. Today's scene is simply
+  `activePlaylist[localEpochDay % playlist.size]`, re-resolved on every frame. When the local
+  date flips at midnight, the modulo changes and the next scene appears automatically — no
+  `AlarmManager`, `WorkManager`, or background jobs needed. Switching playlists in the app
+  takes effect immediately.
 - **`MainActivity`** — a tiny launcher screen that shows the rotation and opens the system's live
   wallpaper preview so the user can apply it.
 
@@ -41,8 +47,9 @@ Then open **Wallpaper Cycler** on the device and tap *Set as live wallpaper*.
 
 ## Adding your own wallpapers
 
-Implement `AnimatedWallpaper` in `wallpapers/` and add it to `WallpaperRegistry.all` — it joins
-the rotation immediately. Keep `draw()` cheap (allocate paints/paths once, not per frame).
+Implement `AnimatedWallpaper` in `wallpapers/` and add it to a playlist in
+`WallpaperRegistry.playlists` (or add a whole new playlist) — it joins the rotation
+immediately. Keep `draw()` cheap (allocate paints/paths once, not per frame).
 
 ## Variations
 

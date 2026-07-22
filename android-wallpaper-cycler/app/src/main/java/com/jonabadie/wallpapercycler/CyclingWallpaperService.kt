@@ -47,8 +47,10 @@ class CyclingWallpaperService : WallpaperService() {
                 canvas = holder.lockCanvas()
                 if (canvas != null) {
                     val t = (SystemClock.elapsedRealtime() - startTime) / 1000f
-                    // Re-resolved every frame, so the scene flips on its own at midnight.
-                    WallpaperRegistry.today().draw(canvas, canvas.width, canvas.height, t)
+                    // Re-resolved every frame, so the scene flips on its own at midnight
+                    // and playlist changes apply immediately.
+                    WallpaperRegistry.today(applicationContext)
+                        .draw(canvas, canvas.width, canvas.height, t)
                 }
             } finally {
                 if (canvas != null) holder.unlockCanvasAndPost(canvas)
