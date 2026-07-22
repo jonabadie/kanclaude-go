@@ -22,12 +22,26 @@ jobs:
           distribution: temurin
           java-version: '17'
 
+      - name: Restore signing keystore
+        env:
+          SIGNING_KEYSTORE_B64: ${{ secrets.SIGNING_KEYSTORE_B64 }}
+        run: |
+          if [ -n "$SIGNING_KEYSTORE_B64" ]; then
+            echo "$SIGNING_KEYSTORE_B64" | base64 -d > android-wallpaper-cycler/signing.keystore
+            echo "Shared signing key restored"
+          else
+            echo "::warning::SIGNING_KEYSTORE_B64 secret not set - using throwaway debug key, updates will not install over other builds"
+          fi
+
       - name: Install Android SDK packages
         run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-35" "build-tools;35.0.0" > /dev/null
 
       - name: Build debug APK
         working-directory: android-wallpaper-cycler
-        run: gradle assembleDebug
+        run: gradle assembleDebug -PversionCode="$GITHUB_RUN_NUMBER" -PversionName="1.$GITHUB_RUN_NUMBER"
+
+      - name: Write version manifest
+        run: printf '{"versionCode":%s,"versionName":"1.%s"}' "$GITHUB_RUN_NUMBER" "$GITHUB_RUN_NUMBER" > version.json
 
       - uses: actions/upload-artifact@v4
         with:
@@ -42,4 +56,5 @@ jobs:
             --notes "Latest debug build of the daily-cycling live wallpaper." \
             --target "$GITHUB_SHA" || true
           gh release upload wallpaper-apk --clobber \
-            android-wallpaper-cycler/app/build/outputs/apk/debug/app-debug.apk
+            android-wallpaper-cycler/app/build/outputs/apk/debug/app-debug.apk \
+            version.json

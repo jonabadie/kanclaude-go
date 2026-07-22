@@ -33,6 +33,7 @@ class MainActivity : AppCompatActivity() {
         scheduleView = findViewById(R.id.schedule)
         playlistGroup = findViewById(R.id.playlists)
         rebuildPlaylists()
+        autoUpdate()
 
         val urlInput = findViewById<EditText>(R.id.urlInput)
         findViewById<Button>(R.id.downloadButton).setOnClickListener {
@@ -112,6 +113,30 @@ class MainActivity : AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 runOnUiThread { toast(getString(R.string.download_failed, e.message ?: e.javaClass.simpleName)) }
+            }
+        }
+    }
+
+    private fun autoUpdate() {
+        val status = findViewById<TextView>(R.id.updateStatus)
+        status.text = getString(R.string.version_label, BuildConfig.VERSION_NAME)
+        executor.execute {
+            val update = try {
+                UpdateManager.checkForUpdate()
+            } catch (e: Exception) {
+                null // offline or version.json not published yet — stay quiet
+            } ?: return@execute
+            runOnUiThread {
+                status.text = getString(R.string.update_downloading, update.versionName)
+                toast(getString(R.string.update_downloading, update.versionName))
+            }
+            try {
+                UpdateManager.downloadAndInstall(this)
+                runOnUiThread { status.text = getString(R.string.update_ready, update.versionName) }
+            } catch (e: Exception) {
+                runOnUiThread {
+                    status.text = getString(R.string.update_failed, e.message ?: e.javaClass.simpleName)
+                }
             }
         }
     }

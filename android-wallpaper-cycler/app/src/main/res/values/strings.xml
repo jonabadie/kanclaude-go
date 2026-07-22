@@ -13,4 +13,8 @@
     <string name="download_done">Added %1$s to the Downloaded playlist</string>
     <string name="download_failed">Download failed: %1$s</string>
     <string name="not_a_gif">that URL is not an animated GIF</string>
+    <string name="version_label">Version %1$s</string>
+    <string name="update_downloading">Update %1$s available — downloading…</string>
+    <string name="update_ready">Update %1$s downloaded — confirm the install</string>
+    <string name="update_failed">Update failed: %1$s</string>
 </resources>
