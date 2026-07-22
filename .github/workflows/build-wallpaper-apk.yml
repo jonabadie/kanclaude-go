@@ -8,6 +8,9 @@ on:
       - '.github/workflows/build-wallpaper-apk.yml'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -30,3 +33,13 @@ jobs:
         with:
           name: wallpaper-cycler-debug-apk
           path: android-wallpaper-cycler/app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Publish APK as release asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create wallpaper-apk --title "Wallpaper Cycler APK" \
+            --notes "Latest debug build of the daily-cycling live wallpaper." \
+            --target "$GITHUB_SHA" || true
+          gh release upload wallpaper-apk --clobber \
+            android-wallpaper-cycler/app/build/outputs/apk/debug/app-debug.apk
